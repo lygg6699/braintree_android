@@ -221,6 +221,10 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
         }
 
         parameters.put(EXPERIENCE_PROFILE_KEY, experienceProfile);
+
+        if (getShippingCallbacks() != null) {
+            parameters.put(SHIPPING_CALLBACKS_KEY, getShippingCallbacks());
+        }
         return parameters.toString();
     }
 

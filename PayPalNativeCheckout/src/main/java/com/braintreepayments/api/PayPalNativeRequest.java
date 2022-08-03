@@ -37,6 +37,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
     static final String MERCHANT_ACCOUNT_ID = "merchant_account_id";
     static final String CORRELATION_ID_KEY = "correlation_id";
     static final String LINE_ITEMS_KEY = "line_items";
+    static final String SHIPPING_CALLBACKS_KEY = "shipping_callbacks";
 
     private String localeCode;
     private String billingAgreementDescription;
@@ -49,6 +50,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
     private String riskCorrelationId;
     private final ArrayList<PayPalNativeCheckoutLineItem> lineItems;
     private String returnUrl;
+    private PayPalNativeShippingCallbacks shippingCallbacks;
 
     /**
      * Constructs a request for PayPal Checkout and Vault flows.
@@ -176,6 +178,19 @@ public abstract class PayPalNativeRequest implements Parcelable {
         this.returnUrl = returnUrl;
     }
 
+    /**
+     * Optional: The shipping callbacks to be enabled for nxo
+     *
+     * @param shippingCallbacks The shipping callback interface
+     */
+    public void setShippingCallbacks(PayPalNativeShippingCallbacks shippingCallbacks) {
+        this.shippingCallbacks = shippingCallbacks;
+    }
+
+    public PayPalNativeShippingCallbacks getShippingCallbacks() {
+        return shippingCallbacks;
+    }
+
     public String getReturnUrl() {
         return returnUrl;
     }
@@ -248,6 +263,5 @@ public abstract class PayPalNativeRequest implements Parcelable {
         parcel.writeString(riskCorrelationId);
         parcel.writeTypedList(lineItems);
         parcel.writeString(returnUrl);
-
     }
 }

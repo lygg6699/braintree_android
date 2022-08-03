@@ -10,9 +10,19 @@ import com.paypal.checkout.PayPalCheckout;
 import com.paypal.checkout.approve.ApprovalData;
 import com.paypal.checkout.config.CheckoutConfig;
 import com.paypal.checkout.config.Environment;
+import com.paypal.checkout.order.Address;
+import com.paypal.checkout.order.Options;
+import com.paypal.checkout.order.patch.OrderUpdate;
+import com.paypal.checkout.order.patch.PatchOperation;
+import com.paypal.checkout.order.patch.PatchOrderRequest;
+import com.paypal.checkout.shipping.ShippingChangeData;
+import com.paypal.checkout.shipping.ShippingChangeType;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Used to tokenize PayPal accounts. For more information see the
@@ -156,10 +166,99 @@ public class PayPalNativeCheckoutClient {
                         }
                     });
                 },
-                null,
+                (shippingChangeData, shippingChangeActions) -> payPalRequest.getShippingCallbacks().onShippingChange(
+                    mapShippingData(shippingChangeData),
+                    (orderUpdate) -> {
+                        shippingChangeActions.patchOrder(mapOrderRequest(orderUpdate), () -> {});
+                        return null;
+                    }
+                ),
                 () -> listener.onPayPalFailure(new Exception("User has canceled")),
                 errorInfo -> listener.onPayPalFailure(new Exception(errorInfo.getError().getMessage()))
         );
+    }
+
+    private PatchOrderRequest mapOrderRequest(PayPalNativeShippingChangeActions.PatchOrderRequest patchOrderRequest) {
+        List<OrderUpdate> updatedList = new ArrayList<>();
+
+        for (PayPalNativeShippingChangeActions.OrderUpdate orderUpdate: patchOrderRequest.getUpdates()) {
+            OrderUpdate newOrderUpdate = new OrderUpdate(
+                    orderUpdate.getPurchaseUnitReferenceId(),
+                    PatchOperation.valueOf(orderUpdate.getPatchOperation().name()),
+                    orderUpdate.getValue()
+            ) {
+                @Override
+                public String getPath$pyplcheckout_externalThreedsRelease() {
+                    return null;
+                }
+            };
+            updatedList.add(newOrderUpdate);
+        }
+        return new PatchOrderRequest(updatedList);
+    }
+
+//    private PayPalNativeShippingChangeActions.PatchOrderRequest mapOrderRequest(PatchOrderRequest patchOrderRequest) {
+//        PayPalNativeShippingChangeActions.PatchOrderRequest updatedRequest = new PayPalNativeShippingChangeActions.PatchOrderRequest();
+//        List<PayPalNativeShippingChangeActions.OrderUpdate> updatedList = new ArrayList<>();
+//
+//        for (OrderUpdate orderUpdate: patchOrderRequest.getOrderUpdates()) {
+//            PayPalNativeShippingChangeActions.OrderUpdate newOrderUpdate = new PayPalNativeShippingChangeActions.OrderUpdate();
+//            newOrderUpdate.setValue(orderUpdate.getValue());
+//            newOrderUpdate.setPurchaseUnitReferenceId(orderUpdate.getPurchaseUnitReferenceId());
+//            // Double check logic
+//            newOrderUpdate.setPatchOperation(
+//                PayPalNativeShippingChangeActions.PatchOperation.valueOf(
+//                    orderUpdate.getPatchOperation().name().toUpperCase(Locale.ROOT)
+//                )
+//            );
+//            updatedList.add(newOrderUpdate);
+//        }
+//        updatedRequest.setUpdates(updatedList);
+//
+//        return updatedRequest;
+//    }
+
+    private PayPalNativeShippingChangeData mapShippingData(ShippingChangeData shippingChangeData) {
+        PayPalNativeShippingChangeData data = new PayPalNativeShippingChangeData();
+
+        data.setPaymentId(shippingChangeData.getPaymentId());
+        data.setToken(shippingChangeData.getPayToken());
+
+        PayPalNativeShippingChangeData.ShippingChangeType shippingChangeType;
+        if (shippingChangeData.getShippingChangeType() == ShippingChangeType.ADDRESS_CHANGE) {
+           shippingChangeType = PayPalNativeShippingChangeData.ShippingChangeType.ADDRESS_CHANGE;
+        } else {
+           shippingChangeType = PayPalNativeShippingChangeData.ShippingChangeType.OPTION_CHANGE;
+        }
+        data.setShippingChangeType(shippingChangeType);
+
+        PostalAddress shippingAddress = new PostalAddress();
+        Address address = shippingChangeData.getShippingAddress();
+        shippingAddress.setStreetAddress(address.getAddressLine1());
+        shippingAddress.setExtendedAddress(address.getAddressLine2());
+        shippingAddress.setLocality(address.getAdminArea1());
+        shippingAddress.setRegion(address.getAdminArea2());
+        shippingAddress.setPostalCode(address.getPostalCode());
+        data.setShippingAddress(shippingAddress);
+
+        List<PayPalNativeShippingChangeData.Options> options = new ArrayList<>();
+        for (Options op: shippingChangeData.getShippingOptions()) {
+            PayPalNativeShippingChangeData.Options updatedOptions = new PayPalNativeShippingChangeData.Options();
+            updatedOptions.setId(op.getId());
+            updatedOptions.setSelected(op.getSelected());
+            updatedOptions.setLabel(op.getLabel());
+
+            PayPalNativeShippingChangeData.Options.UnitAmount unitAmount = new PayPalNativeShippingChangeData.Options.UnitAmount();
+            if (op.getAmount() != null) {
+                unitAmount.setValue(op.getAmount().getValue());
+                unitAmount.setCurrencyCode(PayPalNativeShippingChangeData.CurrencyCode.valueOf(op.getAmount().getCurrencyCode().name()));
+            }
+            updatedOptions.setUnitAmount(unitAmount);
+            options.add(updatedOptions);
+        }
+        data.setShippingOptions(options);
+
+        return data;
     }
 
     private PayPalNativeCheckoutAccount setupAccount(
