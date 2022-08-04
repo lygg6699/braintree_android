@@ -13,6 +13,8 @@ import com.paypal.checkout.config.Environment;
 import com.paypal.checkout.createorder.CurrencyCode;
 import com.paypal.checkout.createorder.ShippingType;
 import com.paypal.checkout.order.Address;
+import com.paypal.checkout.order.Amount;
+import com.paypal.checkout.order.BreakDown;
 import com.paypal.checkout.order.Options;
 import com.paypal.checkout.order.UnitAmount;
 import com.paypal.checkout.order.patch.OrderUpdate;
@@ -199,7 +201,7 @@ public class PayPalNativeCheckoutClient {
             } else if (orderUpdate instanceof PayPalNativePatchShippingOptions) {
                 value = mapShippingOptions(((PayPalNativePatchShippingOptions) orderUpdate).getOptionsList());
             } else {
-                value = ((PayPalNativePatchAmount) orderUpdate).getAmount();
+                value = mapAmount(((PayPalNativePatchAmount) orderUpdate).getAmount());
             }
             OrderUpdate newOrderUpdate = new OrderUpdate(
                 orderUpdate.getPurchaseUnitReferenceId(),
@@ -214,6 +216,26 @@ public class PayPalNativeCheckoutClient {
             updatedList.add(newOrderUpdate);
         }
         return new PatchOrderRequest(updatedList);
+    }
+
+    private Amount mapAmount(PayPalNativeAmount nativeAmount) {
+        BreakDown breakDown = new BreakDown(
+            mapUnitAmount(nativeAmount.getBreakDown().itemTotal),
+                mapUnitAmount(nativeAmount.getBreakDown().shipping),
+                mapUnitAmount(nativeAmount.getBreakDown().handling),
+                mapUnitAmount(nativeAmount.getBreakDown().taxTotal),
+                mapUnitAmount(nativeAmount.getBreakDown().shippingDiscount),
+                mapUnitAmount(nativeAmount.getBreakDown().discount)
+            );
+        return new Amount(
+            CurrencyCode.valueOf(nativeAmount.getCurrencyCode().name().toUpperCase(Locale.ROOT)),
+            nativeAmount.getValue(),
+            breakDown
+        );
+    }
+
+    private UnitAmount mapUnitAmount(PayPalNativeShippingChangeData.Options.UnitAmount nativeUnitAmount) {
+        return new UnitAmount(CurrencyCode.valueOf(nativeUnitAmount.getCurrencyCode().name().toUpperCase(Locale.ROOT)), nativeUnitAmount.getValue());
     }
 
     private PayPalNativeShippingChangeData mapShippingData(ShippingChangeData shippingChangeData) {

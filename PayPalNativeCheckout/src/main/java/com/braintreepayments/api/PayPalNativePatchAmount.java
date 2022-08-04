@@ -10,18 +10,18 @@ import java.util.Objects;
  *  Replaces the amount on a PurchaseUnit
  */
 public class PayPalNativePatchAmount extends PayPalNativeOrderUpdate {
-    private Amount amount;
+    private PayPalNativeAmount amount;
 
-    public Amount getAmount() {
+    public PayPalNativeAmount getAmount() {
         return amount;
     }
 
-    public void setAmount(Amount amount) {
+    public void setAmount(PayPalNativeAmount amount) {
         this.amount = amount;
     }
 
     public PayPalNativePatchAmount(
-        Amount amount,
+            PayPalNativeAmount amount,
         @Nullable String purchaseUnitReferenceId
     ) {
         this.amount = amount;
