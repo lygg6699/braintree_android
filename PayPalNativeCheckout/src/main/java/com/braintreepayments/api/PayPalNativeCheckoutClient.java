@@ -10,8 +10,11 @@ import com.paypal.checkout.PayPalCheckout;
 import com.paypal.checkout.approve.ApprovalData;
 import com.paypal.checkout.config.CheckoutConfig;
 import com.paypal.checkout.config.Environment;
+import com.paypal.checkout.createorder.CurrencyCode;
+import com.paypal.checkout.createorder.ShippingType;
 import com.paypal.checkout.order.Address;
 import com.paypal.checkout.order.Options;
+import com.paypal.checkout.order.UnitAmount;
 import com.paypal.checkout.order.patch.OrderUpdate;
 import com.paypal.checkout.order.patch.PatchOperation;
 import com.paypal.checkout.order.patch.PatchOrderRequest;
@@ -23,6 +26,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Used to tokenize PayPal accounts. For more information see the
@@ -168,8 +172,15 @@ public class PayPalNativeCheckoutClient {
                 },
                 (shippingChangeData, shippingChangeActions) -> payPalRequest.getShippingCallbacks().onShippingChange(
                     mapShippingData(shippingChangeData),
-                    (orderUpdate) -> {
-                        shippingChangeActions.patchOrder(mapOrderRequest(orderUpdate), () -> {});
+                    (actions) -> {
+                        shippingChangeActions.patchOrder(
+                            mapOrderRequest(actions.getPatchOrderRequest()),
+                            () -> actions.getOnPatchComplete().onPatchComplete()
+                        );
+                        return null;
+                    },
+                    (object) -> {
+                        shippingChangeActions.reject();
                         return null;
                     }
                 ),
@@ -178,45 +189,32 @@ public class PayPalNativeCheckoutClient {
         );
     }
 
-    private PatchOrderRequest mapOrderRequest(PayPalNativeShippingChangeActions.PatchOrderRequest patchOrderRequest) {
+    private PatchOrderRequest mapOrderRequest(com.braintreepayments.api.PatchOrderRequest patchOrderRequest) {
         List<OrderUpdate> updatedList = new ArrayList<>();
 
-        for (PayPalNativeShippingChangeActions.OrderUpdate orderUpdate: patchOrderRequest.getUpdates()) {
+        for (PayPalNativeOrderUpdate orderUpdate: patchOrderRequest.getUpdates()) {
+            Object value;
+            if (orderUpdate instanceof PayPalNativePatchShippingAddress) {
+                value = mapAddress(((PayPalNativePatchShippingAddress) orderUpdate).getAddress());
+            } else if (orderUpdate instanceof PayPalNativePatchShippingOptions) {
+                value = mapShippingOptions(((PayPalNativePatchShippingOptions) orderUpdate).getOptionsList());
+            } else {
+                value = ((PayPalNativePatchAmount) orderUpdate).getAmount();
+            }
             OrderUpdate newOrderUpdate = new OrderUpdate(
-                    orderUpdate.getPurchaseUnitReferenceId(),
-                    PatchOperation.valueOf(orderUpdate.getPatchOperation().name()),
-                    orderUpdate.getValue()
+                orderUpdate.getPurchaseUnitReferenceId(),
+                PatchOperation.valueOf(orderUpdate.getPatchOperation().name()),
+                value
             ) {
                 @Override
                 public String getPath$pyplcheckout_externalThreedsRelease() {
-                    return null;
+                    return orderUpdate.getPath();
                 }
             };
             updatedList.add(newOrderUpdate);
         }
         return new PatchOrderRequest(updatedList);
     }
-
-//    private PayPalNativeShippingChangeActions.PatchOrderRequest mapOrderRequest(PatchOrderRequest patchOrderRequest) {
-//        PayPalNativeShippingChangeActions.PatchOrderRequest updatedRequest = new PayPalNativeShippingChangeActions.PatchOrderRequest();
-//        List<PayPalNativeShippingChangeActions.OrderUpdate> updatedList = new ArrayList<>();
-//
-//        for (OrderUpdate orderUpdate: patchOrderRequest.getOrderUpdates()) {
-//            PayPalNativeShippingChangeActions.OrderUpdate newOrderUpdate = new PayPalNativeShippingChangeActions.OrderUpdate();
-//            newOrderUpdate.setValue(orderUpdate.getValue());
-//            newOrderUpdate.setPurchaseUnitReferenceId(orderUpdate.getPurchaseUnitReferenceId());
-//            // Double check logic
-//            newOrderUpdate.setPatchOperation(
-//                PayPalNativeShippingChangeActions.PatchOperation.valueOf(
-//                    orderUpdate.getPatchOperation().name().toUpperCase(Locale.ROOT)
-//                )
-//            );
-//            updatedList.add(newOrderUpdate);
-//        }
-//        updatedRequest.setUpdates(updatedList);
-//
-//        return updatedRequest;
-//    }
 
     private PayPalNativeShippingChangeData mapShippingData(ShippingChangeData shippingChangeData) {
         PayPalNativeShippingChangeData data = new PayPalNativeShippingChangeData();
@@ -239,6 +237,7 @@ public class PayPalNativeCheckoutClient {
         shippingAddress.setLocality(address.getAdminArea1());
         shippingAddress.setRegion(address.getAdminArea2());
         shippingAddress.setPostalCode(address.getPostalCode());
+        shippingAddress.setCountryCodeAlpha2(address.getCountryCode());
         data.setShippingAddress(shippingAddress);
 
         List<PayPalNativeShippingChangeData.Options> options = new ArrayList<>();
@@ -259,6 +258,36 @@ public class PayPalNativeCheckoutClient {
         data.setShippingOptions(options);
 
         return data;
+    }
+
+    private Address mapAddress(PostalAddress postalAddress) {
+        return new Address(
+            postalAddress.getStreetAddress(),
+            postalAddress.getExtendedAddress(),
+            postalAddress.getLocality(),
+            postalAddress.getRegion(),
+            postalAddress.getPostalCode(),
+            postalAddress.getCountryCodeAlpha2()
+        );
+    }
+
+    private List<Options> mapShippingOptions(List<PayPalNativeShippingChangeData.Options> optionsList) {
+        List<Options> options = new ArrayList<>();
+        for (PayPalNativeShippingChangeData.Options op: optionsList) {
+            UnitAmount unitAmount = new UnitAmount(
+                CurrencyCode.valueOf(op.getUnitAmount().getCurrencyCode().name().toUpperCase(Locale.ROOT)),
+                op.getUnitAmount().getValue()
+            );
+            Options updatedOptions = new Options(
+                op.getId(),
+                op.isSelected(),
+                op.getLabel(),
+                ShippingType.valueOf(op.getShippingType().name().toUpperCase(Locale.ROOT)),
+                unitAmount
+            );
+            options.add(updatedOptions);
+        }
+        return options;
     }
 
     private PayPalNativeCheckoutAccount setupAccount(

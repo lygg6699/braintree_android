@@ -4,8 +4,8 @@ import android.content.Context;
 
 import com.braintreepayments.api.PayPalNativeCheckoutRequest;
 import com.braintreepayments.api.PayPalNativeCheckoutPaymentIntent;
-import com.braintreepayments.api.PayPalNativeRequest;
 import com.braintreepayments.api.PayPalNativeCheckoutVaultRequest;
+import com.braintreepayments.api.PayPalNativeShippingCallbacks;
 import com.braintreepayments.api.PostalAddress;
 
 public class PayPalNativeCheckoutRequestFactory {
@@ -34,7 +34,7 @@ public class PayPalNativeCheckoutRequestFactory {
         return request;
     }
 
-    public static PayPalNativeCheckoutRequest createPayPalCheckoutRequest(Context context, String amount) {
+    public static PayPalNativeCheckoutRequest createPayPalCheckoutRequest(Context context, String amount, PayPalNativeShippingCallbacks callbacks) {
         PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest(amount);
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
@@ -63,6 +63,9 @@ public class PayPalNativeCheckoutRequestFactory {
 
             request.setShippingAddressOverride(shippingAddress);
         }
+
+        request.setShippingAddressRequired(true);
+        request.setShippingCallbacks(callbacks);
         request.setReturnUrl("com.braintreepayments.demo://paypalpay");
         return request;
     }

@@ -1,55 +1,32 @@
 package com.braintreepayments.api;
 
-import java.util.List;
-
 public class PayPalNativeShippingChangeActions {
 
-    static class PatchOrderRequest {
-        private List<OrderUpdate> updates;
+    private OnPatchComplete onPatchComplete;
+    private PatchOrderRequest patchOrderRequest;
 
-        public List<OrderUpdate> getUpdates() {
-            return updates;
-        }
-
-        public void setUpdates(List<OrderUpdate> updates) {
-            this.updates = updates;
-        }
+    public OnPatchComplete getOnPatchComplete() {
+        return onPatchComplete;
     }
 
-    static class OrderUpdate {
-        private String purchaseUnitReferenceId;
-        private PatchOperation patchOperation;
-        Object value;
-
-        public String getPurchaseUnitReferenceId() {
-            return purchaseUnitReferenceId;
-        }
-
-        public void setPurchaseUnitReferenceId(String purchaseUnitReferenceId) {
-            this.purchaseUnitReferenceId = purchaseUnitReferenceId;
-        }
-
-        public PatchOperation getPatchOperation() {
-            return patchOperation;
-        }
-
-        public void setPatchOperation(PatchOperation patchOperation) {
-            this.patchOperation = patchOperation;
-        }
-
-        public Object getValue() {
-            return value;
-        }
-
-        public void setValue(Object value) {
-            this.value = value;
-        }
+    public void setOnPatchComplete(OnPatchComplete onPatchComplete) {
+        this.onPatchComplete = onPatchComplete;
     }
 
-    enum PatchOperation {
-        ADD,
-        REPLACE,
-        REMOVE
+    public PatchOrderRequest getPatchOrderRequest() {
+        return patchOrderRequest;
     }
 
+    public void setPatchOrderRequest(PatchOrderRequest patchOrderRequest) {
+        this.patchOrderRequest = patchOrderRequest;
+    }
+
+    public interface OnPatchComplete {
+
+        /**
+         * Called when a patch order request has completed. This will only be called when a patch
+         * request has succeeded
+         */
+        void onPatchComplete();
+    }
 }

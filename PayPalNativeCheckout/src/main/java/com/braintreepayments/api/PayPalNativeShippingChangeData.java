@@ -2,7 +2,7 @@ package com.braintreepayments.api;
 
 import java.util.List;
 
-class PayPalNativeShippingChangeData {
+public class PayPalNativeShippingChangeData {
     private String token;
     private String paymentId;
     private ShippingChangeType shippingChangeType;
@@ -61,6 +61,16 @@ class PayPalNativeShippingChangeData {
         private String id;
         private boolean selected;
         private String label;
+        private ShippingType shippingType;
+        private UnitAmount unitAmount;
+
+        public ShippingType getShippingType() {
+            return shippingType;
+        }
+
+        public void setShippingType(ShippingType shippingType) {
+            this.shippingType = shippingType;
+        }
 
         public String getId() {
             return id;
@@ -94,8 +104,6 @@ class PayPalNativeShippingChangeData {
             this.unitAmount = unitAmount;
         }
 
-        private UnitAmount unitAmount;
-
         static class UnitAmount {
             private CurrencyCode currencyCode;
             private String value;
@@ -116,18 +124,18 @@ class PayPalNativeShippingChangeData {
                 this.value = value;
             }
         }
-    }
 
-    enum ShippingType {
-        /**
-         * The payer intends to receive the items at a specified address.
-         */
-        SHIPPING,
+        enum ShippingType {
+            /**
+             * The payer intends to receive the items at a specified address.
+             */
+            SHIPPING,
 
-        /**
-         * The payer intends to pick up the items at a specified address. For example, a store address.
-         */
-        PICKUP
+            /**
+             * The payer intends to pick up the items at a specified address. For example, a store address.
+             */
+            PICKUP
+        }
     }
 
     enum CurrencyCode {
