@@ -26,10 +26,6 @@ internal class AnalyticsConfiguration(val url: String?) {
          */
         @JvmStatic
         fun fromJson(json: JSONObject?): AnalyticsConfiguration {
-            var json = json
-            if (json == null) {
-                json = JSONObject()
-            }
             val url = Json.optString(json, URL_KEY, null)
             return AnalyticsConfiguration(url)
         }
