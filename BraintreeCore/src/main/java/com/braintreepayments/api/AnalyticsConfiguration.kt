@@ -7,7 +7,7 @@ import org.json.JSONObject
  * Contains configuration for Braintree analytics calls
  * @property url url of the Braintree analytics service.
  */
-internal class AnalyticsConfiguration(val url: String?) {
+internal class AnalyticsConfiguration private constructor(val url: String?) {
 
     /**
      * @return `true` if analytics are enabled, `false` otherwise.
