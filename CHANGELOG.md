@@ -4,6 +4,8 @@
 
 * BraintreeCore
   * Allow uppercase characters in default return url scheme
+* ThreeDSecure
+  * Add `setRequestedExemptionType` to `ThreeDSecureRequest`
 
 * PayPalNativeCheckout (BETA)
   * Bump native-checkout version to `0.8.8`
