@@ -2,6 +2,11 @@
 
 ## unreleased
 
+* SharedUtils
+  * Bump androidx `security-crypto` dependency to `1.1.0-alpha04`
+
+## 4.24.0
+
 * BraintreeCore
   * Allow uppercase characters in default return url scheme
 * ThreeDSecure
