@@ -3,6 +3,11 @@
 ## unreleased
 
 * SharedUtils
+  * Revert androidx `security-crypto` dependency to `1.1.0-alpha03` (`1.1.0-alpha04` requires a compile target of 33)
+
+## 4.25.0
+
+* SharedUtils
   * Bump androidx `security-crypto` dependency to `1.1.0-alpha04`
 * PayPalNativeCheckout (BETA)
   * Bump native-checkout version to `0.8.8`
@@ -470,6 +475,11 @@
   * Make `TokenizationKey` package-private
   * Make `ClientToken` package-private
   * Make `PayPalUAT` package-private
+
+## 3.20.0
+
+* Bump Cardinal version to `2.2.7-2`
+* Update pinned certificates used by `BraintreeGraphQLHttpClient` and `BraintreeHttpClient`
 
 ## 3.19.0
 
