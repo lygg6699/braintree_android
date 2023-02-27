@@ -38,6 +38,9 @@ dependencies {
 
     implementation deps.annotation
 
+    implementation deps.coreKtx
+    implementation deps.kotlinStdLib
+
     testImplementation deps.robolectric
     testImplementation deps.powermockJunit
     testImplementation deps.powermockRule
