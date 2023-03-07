@@ -65,3 +65,4 @@ The individual components may be of interest for advanced integrations and are e
 * As needed, the Braintree team may develop features privately
   * If our internal and public branches get out of sync, we will reconcile this with merges (as opposed to rebasing)
   * In general, we will try to develop in the open as much as possible
+
