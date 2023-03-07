@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.RestrictTo;
+
 import com.visa.checkout.VisaPaymentSummary;
 
 import org.json.JSONException;
@@ -31,8 +33,12 @@ class VisaCheckoutAccount extends PaymentMethod {
         encryptedPaymentData = visaPaymentSummary.getEncPaymentData();
     }
 
+    /**
+     * @hide
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @Override
-    JSONObject buildJSON() throws JSONException {
+    public JSONObject buildJSON() throws JSONException {
         JSONObject json = super.buildJSON();
 
         JSONObject paymentMethodNonceJson = new JSONObject();
@@ -44,8 +50,12 @@ class VisaCheckoutAccount extends PaymentMethod {
         return json;
     }
 
+    /**
+     * @hide
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @Override
-    String getApiPath() {
+    public String getApiPath() {
         return "visa_checkout_cards";
     }
 }

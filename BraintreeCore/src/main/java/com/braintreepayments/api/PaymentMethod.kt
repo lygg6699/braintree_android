@@ -17,7 +17,7 @@ abstract class PaymentMethod {
 
     abstract val apiPath: String?
 
-    internal constructor()
+    protected constructor()
 
     /**
      * @suppress
@@ -69,7 +69,7 @@ abstract class PaymentMethod {
         return base
     }
 
-    internal constructor(`in`: Parcel) {
+    protected constructor(`in`: Parcel) {
         integration = `in`.readString()
         source = `in`.readString()
         sessionId = `in`.readString()
