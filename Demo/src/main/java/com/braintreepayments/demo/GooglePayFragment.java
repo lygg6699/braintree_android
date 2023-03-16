@@ -23,6 +23,10 @@ import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class GooglePayFragment extends BaseFragment implements GooglePayListener {
 
     private ImageButton googlePayButton;
@@ -85,23 +89,37 @@ public class GooglePayFragment extends BaseFragment implements GooglePayListener
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
+        JSONObject parameters = null;
+        try {
+            parameters = new JSONObject()
+                    .put("allowedCardNetworks", getAllowedCardNetworks())
+                    .put("allowedAuthMethods", getAllowedCardAuthMethods());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         GooglePayRequest googlePayRequest = new GooglePayRequest();
         googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
                 .setCurrencyCode(Settings.getGooglePayCurrency(activity))
                 .setTotalPrice("1.00")
                 .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                 .build());
-        googlePayRequest.setAllowPrepaidCards(Settings.areGooglePayPrepaidCardsAllowed(activity));
-        googlePayRequest.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
-        googlePayRequest.setBillingAddressRequired(Settings.isGooglePayBillingAddressRequired(activity));
-        googlePayRequest.setEmailRequired(Settings.isGooglePayEmailRequired(activity));
-        googlePayRequest.setPhoneNumberRequired(Settings.isGooglePayPhoneNumberRequired(activity));
-        googlePayRequest.setShippingAddressRequired(Settings.isGooglePayShippingAddressRequired(activity));
-        googlePayRequest.setShippingAddressRequirements(ShippingAddressRequirements.newBuilder()
-                .addAllowedCountryCodes(Settings.getGooglePayAllowedCountriesForShipping(activity))
-                .build());
+        googlePayRequest.setAllowedPaymentMethod("CARD", parameters);
+        googlePayRequest.setAllowedCardNetworks("CARD", getAllowedCardNetworks());
+        googlePayRequest.setAllowedAuthMethods("CARD", getAllowedCardAuthMethods());
 
         googlePayClient.requestPayment(getActivity(), googlePayRequest);
+    }
+
+    private static JSONArray getAllowedCardNetworks() {
+        return new JSONArray()
+                .put("MASTERCARD");
+    }
+
+    private static JSONArray getAllowedCardAuthMethods() {
+        return new JSONArray()
+                .put("PAN_ONLY")
+                .put("CRYPTOGRAM_3DS");
     }
 
     private void handleGooglePayActivityResult(ActivityResult activityResult) {
