@@ -28,6 +28,8 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
+    namespace 'com.braintreepayments.api.unionpay'
+    testNamespace 'com.braintreepayments.api'
 }
 
 dependencies {

@@ -30,6 +30,7 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
+    namespace 'com.braintreepayments.api.threedsecure'
 }
 
 dependencies {

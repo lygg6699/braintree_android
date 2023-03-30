@@ -15,9 +15,6 @@ android {
         consumerProguardFiles 'proguard.pro'
     }
 
-    lintOptions {
-        abortOnError false
-    }
 
     testOptions.unitTests {
         all {
@@ -31,12 +28,23 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
+    lint {
+        abortOnError false
+    }
+    namespace 'com.braintreepayments.api.visacheckout'
+
+    // Ref: https://stackoverflow.com/a/70420754
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
 }
 
 dependencies {
     api project(':BraintreeCore')
     api project(':Card')
-    api(group: 'com.visa.checkout', name: 'visacheckout-android-sdk', version: '6.6.1', ext: 'aar')
+    api files('libs/visacheckout-android-sdk-6.6.1.aar')
 
     implementation deps.appCompat
 
@@ -51,7 +59,6 @@ dependencies {
     testImplementation deps.powermockMockito
     testImplementation deps.powermockClassloading
     testImplementation deps.jsonAssert
-    testImplementation deps.assertJ
 }
 
 /* maven deploy + signing */
@@ -77,46 +84,47 @@ nexusPublishing {
     }
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-
-                artifact sourcesJar
-
-                groupId = 'com.braintreepayments.api'
-                artifactId = 'visa-checkout'
-                version = rootProject.versionName
-
-                pom {
-                    name = 'visa-checkout'
-                    packaging = 'aar'
-                    description = 'Visa Checkout Module for Braintree\'s Android SDK.'
-                    url = 'https://github.com/braintree/braintree_android'
-
-                    scm {
-                        url = 'scm:git@github.com:braintree/braintree_android.git'
-                        connection = 'scm:git@github.com:braintree/braintree_android.git'
-                        developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
-                    }
-
-                    developers {
-                        developer {
-                            id = 'devs'
-                            name = 'Braintree Payments'
-                        }
-                    }
-
-                    licenses {
-                        license {
-                            name = 'MIT'
-                            url = 'http://opensource.org/licenses/MIT'
-                            distribution = 'repo'
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+// TODO: re-enable using flatDir if necessary
+//afterEvaluate {
+//    publishing {
+//        publications {
+//            release(MavenPublication) {
+//                from components.release
+//
+//                artifact sourcesJar
+//
+//                groupId = 'com.braintreepayments.api'
+//                artifactId = 'visa-checkout'
+//                version = rootProject.versionName
+//
+//                pom {
+//                    name = 'visa-checkout'
+//                    packaging = 'aar'
+//                    description = 'Visa Checkout Module for Braintree\'s Android SDK.'
+//                    url = 'https://github.com/braintree/braintree_android'
+//
+//                    scm {
+//                        url = 'scm:git@github.com:braintree/braintree_android.git'
+//                        connection = 'scm:git@github.com:braintree/braintree_android.git'
+//                        developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
+//                    }
+//
+//                    developers {
+//                        developer {
+//                            id = 'devs'
+//                            name = 'Braintree Payments'
+//                        }
+//                    }
+//
+//                    licenses {
+//                        license {
+//                            name = 'MIT'
+//                            url = 'http://opensource.org/licenses/MIT'
+//                            distribution = 'repo'
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}

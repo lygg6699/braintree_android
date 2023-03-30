@@ -13,16 +13,17 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
-    lintOptions {
-        disable 'InvalidPackage'
-        textReport true
-        textOutput 'stdout'
-    }
 
     compileOptions {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
+    lint {
+        disable 'InvalidPackage'
+        textOutput file('stdout')
+        textReport true
+    }
+    namespace 'com.braintreepayments.api.testutils'
 }
 
 dependencies {

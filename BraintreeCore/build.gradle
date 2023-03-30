@@ -10,6 +10,12 @@ plugins {
 def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"'
 
 android {
+
+    lint {
+        textOutput file('stdout')
+        textReport true
+    }
+    namespace 'com.braintreepayments.api'
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
@@ -20,6 +26,13 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         buildConfigField "String", "VERSION_NAME", "\"${rootProject.versionName}\""
+
+        // Ref: https://commonsware.com/Room/pages/chap-migrations-003.html
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
 
     testOptions {
@@ -30,21 +43,17 @@ android {
             }
         }
     }
-
     packagingOptions {
-        exclude 'META-INF/maven/com.google.guava/guava/pom.properties'
-        exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
-    }
-
-    lintOptions {
-        textReport true
-        textOutput 'stdout'
+        resources {
+            excludes += ['META-INF/maven/com.google.guava/guava/pom.properties', 'META-INF/maven/com.google.guava/guava/pom.xml']
+        }
     }
 
     compileOptions {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
+
 }
 
 
@@ -89,7 +98,7 @@ dependencies {
     testImplementation project(':Venmo')
 
     // Ref: https://kotlin.github.io/dokka/1.8.0-SNAPSHOT/user_guide/applying/gradle/#applying-plugins
-    dokkaHtmlPartialPlugin 'org.jetbrains.dokka:android-documentation-plugin:1.7.20'
+    dokkaHtmlPartialPlugin 'org.jetbrains.dokka:android-documentation-plugin:1.8.10'
 }
 
 android.buildTypes.each { type ->

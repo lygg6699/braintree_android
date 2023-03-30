@@ -8,25 +8,12 @@ buildscript {
     }
 
     def sdkTargetJavaVersion = JavaVersion.VERSION_1_8
-
-    // We are restricted to room version 2.2.6 since we still offer Java 7 support. Upgrading to
-    // newer versions of room that require Java 8 will introduce a breaking change to our SDK
-    def java7SafeRoomVersion = "2.2.6"
-
-    // On M1 Macs, switch room version to 2.4.0 to fix java.lang.ExceptionInInitializerError
-    def m1MacSafeRoomVersion = "2.4.0"
-
-    // The 'CI' build variable will evaluate to 'true' when build script is executed via GitHub Actions
-    // Ref: https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
-    def roomVersion = System.getenv('CI') ? java7SafeRoomVersion : m1MacSafeRoomVersion
-
     ext.versions = [
-            "kotlin"         : "1.7.0",
-            "androidxTest"   : "1.4.0",
+            "kotlin"         : "1.8.10",
+            "androidxTest"   : "1.5.0",
             "powermock"      : '2.0.9',
             "powermockLegacy": "1.7.4",
-            // NEXT MAJOR VERSION: Use a single up-to-date room version once we remove Java 7 support in favor of Java 11
-            "room"           : roomVersion,
+            "room"           : "2.5.1",
             "playServices"   : "19.1.0",
             "javaSourceCompatibility": sdkTargetJavaVersion,
             "javaTargetCompatibility": sdkTargetJavaVersion,
@@ -35,12 +22,13 @@ buildscript {
     ext.deps = [
             "appCompat"                  : "androidx.appcompat:appcompat:1.3.1",
             "annotation"                 : "androidx.annotation:annotation:1.2.0",
-            "coreKtx"                    : "androidx.core:core-ktx:1.1.0",
+            "coreKtx"                    : "androidx.core:core-ktx:1.10.0",
 
-            // NEXT_MAJOR_VERSION: upgrade to 2.4.0 (or latest) when Java 7 support is explicitly dropped
-            "lifecycleRuntime"           : "androidx.lifecycle:lifecycle-runtime:2.3.0",
+            // TODO: update to DefaultLifecycleObserver
+            "lifecycleRuntime"           : "androidx.lifecycle:lifecycle-runtime:2.6.1",
 
-            "kotlinStdLib"               : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}",
+            // Ref: https://kotlinlang.org/docs/whatsnew18.html#updated-jvm-compilation-target
+            "kotlinStdLib"               : "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}",
             "kotlinTest"                 : "org.jetbrains.kotlin:kotlin-test-junit:${versions.kotlin}",
             // This library doesn't seem to follow the versioning pattern of the other jetbrains
             // kotlin libraries. Make sure to keep this dependency in line with the kotlin version used.
@@ -51,9 +39,8 @@ buildscript {
             "samsungPay"                 : "com.samsung.android.spay:sdk:2.5.01",
             "playServicesWallet"         : "com.google.android.gms:play-services-wallet:${versions.playServices}",
 
-            // NEXT_MAJOR_VERSION: upgrade to 2.7.1 (or latest) when Java 7 support is explicitly dropped
-            "work"                       : "androidx.work:work-runtime:2.7.0-alpha05",
-            "workTesting"                : "androidx.work:work-testing:2.5.0",
+            "work"                       : "androidx.work:work-runtime:2.7.1",
+            "workTesting"                : "androidx.work:work-testing:2.7.1",
 
             "roomCompiler"               : "androidx.room:room-compiler:${versions.room}",
             "roomRuntime"                : "androidx.room:room-runtime:${versions.room}",
@@ -64,12 +51,11 @@ buildscript {
 
             "junit"                      : "junit:junit:4.13",
             "junitTest"                  : "androidx.test.ext:junit:1.1.3",
-            "robolectric"                : "org.robolectric:robolectric:4.1",
+            "robolectric"                : "org.robolectric:robolectric:4.7.3",
             "dexmakerMockito"            : "com.google.dexmaker:dexmaker-mockito:1.2",
             "mockitoCore"                : "org.mockito:mockito-core:3.6.0",
-            "jsonAssert"                 : "org.skyscreamer:jsonassert:1.5.0",
-            "assertJ"                    : "com.squareup.assertj:assertj-android:1.1.1",
-            "mockk"                      : "io.mockk:mockk:1.12.0",
+            "jsonAssert"                 : "org.skyscreamer:jsonassert:1.5.1",
+            "mockk"                      : "io.mockk:mockk:1.13.4",
 
             "powermockJunit"             : "org.powermock:powermock-module-junit4:${versions.powermock}",
             "powermockRule"              : "org.powermock:powermock-module-junit4-rule:${versions.powermock}",
@@ -85,19 +71,20 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:7.4.2'
-        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2'
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0'
         classpath 'de.marcphilipp.gradle:nexus-publish-plugin:0.4.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
-        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.4.1'
-        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.7.20'
-        classpath 'org.jetbrains.dokka:android-documentation-plugin:1.7.20'
+        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.5.3'
+        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.8.10'
+        classpath 'org.jetbrains.dokka:android-documentation-plugin:1.8.10'
     }
 }
 
 plugins {
     id 'org.jetbrains.dokka' version '1.7.10'
-    id 'io.codearte.nexus-staging' version '0.21.2'
+    id 'io.codearte.nexus-staging' version '0.30.0'
     id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
+    id 'com.github.ben-manes.versions' version '0.46.0'
 }
 
 ext["signing.keyId"] = System.getenv('SIGNING_KEY_ID') ?: ''
@@ -137,9 +124,6 @@ subprojects {
                 password 'AKCp8jQcoDy2hxSWhDAUQKXLDPDx6NYRkqrgFLRc3qDrayg6rrCbJpsKKyMwaykVL8FWusJpp'
             }
         }
-        flatDir {
-            dirs "${rootDir}/libs"
-        }
     }
 }
 
@@ -150,7 +134,7 @@ dokkaHtmlMultiModule.configure {
 
 task changeGradleReleaseVersion {
     doLast {
-        def gradleFile = new File('build.gradle')
+        def gradleFile = file('build.gradle')
         def gradleFileText = gradleFile.text.replaceFirst("\\nversion '\\d+\\.\\d+\\.\\d+(-.*)?'", "\nversion '" + versionParam + "'")
         gradleFile.write(gradleFileText)
     }
@@ -159,7 +143,7 @@ task changeGradleReleaseVersion {
 task changeREADMEVersion {
     doLast {
 
-        def readmeFile = new File('README.md')
+        def readmeFile = file('README.md')
         def readmeFileText = readmeFile.text.replaceFirst(":card:\\d+\\.\\d+\\.\\d+'", ":card:" + versionParam + "'")
         readmeFile.write(readmeFileText)
     }
@@ -167,11 +151,11 @@ task changeREADMEVersion {
 
 task changeMigrationGuideVersion {
     doLast {
-        def migrationGuideFile = new File('v4_MIGRATION_GUIDE.md')
+        def migrationGuideFile = file('v4_MIGRATION_GUIDE.md')
         def migrationGuideFileText = migrationGuideFile.text.replaceAll(":\\d+\\.\\d+\\.\\d+(-.*)?'", ":" + versionParam + "'")
         migrationGuideFile.write(migrationGuideFileText)
 
-        def newMigrationGuideFile = new File('v4.9.0+_MIGRATION_GUIDE.md')
+        def newMigrationGuideFile = file('v4.9.0+_MIGRATION_GUIDE.md')
         def newMigrationGuideFileText = newMigrationGuideFile.text.replaceAll(":\\d+\\.\\d+\\.\\d+(-.*)?'", ":" + versionParam + "'")
         newMigrationGuideFile.write(newMigrationGuideFileText)
     }
@@ -179,7 +163,7 @@ task changeMigrationGuideVersion {
 
 task updateCHANGELOGVersion {
     doLast {
-        def changelogFile = new File('CHANGELOG.md')
+        def changelogFile = file('CHANGELOG.md')
         def changelogFileText = changelogFile.text.replaceFirst("## unreleased", "## " + versionParam)
         changelogFile.write(changelogFileText)
     }
@@ -187,7 +171,7 @@ task updateCHANGELOGVersion {
 
 task incrementSNAPSHOTVersion {
     doLast {
-        def gradleFile = new File('build.gradle')
+        def gradleFile = file('build.gradle')
         def (major, minor, patch) = versionParam.tokenize('.')
         def patchInteger = patch.toInteger()
         def newVersion = "$major.$minor.${patchInteger + 1}-SNAPSHOT"
@@ -195,7 +179,7 @@ task incrementSNAPSHOTVersion {
         gradleFile.write(gradleFileText)
 
         // update README snapshot version
-        def readmeFile = new File('README.md')
+        def readmeFile = file('README.md')
         def readmeFileText = readmeFile.text.replaceFirst(":card:\\d+\\.\\d+\\.\\d+-SNAPSHOT'", ":card:" + newVersion + "'")
         readmeFile.write(readmeFileText)
     }
@@ -203,11 +187,22 @@ task incrementSNAPSHOTVersion {
 
 task incrementVersionCode {
     doLast {
-        def gradleFile = new File('build.gradle')
+        def gradleFile = file('build.gradle')
         def versionText = gradleFile.text.find("versionCode = \\d+")
         def params = versionText.split("=")
         def newVersionCode = params[1].trim().toInteger() + 1
         def gradleFileText = gradleFile.text.replaceFirst("versionCode = \\d+", "versionCode = " + newVersionCode)
         gradleFile.write(gradleFileText)
     }
+}
+
+// Ref: https://github.com/ben-manes/gradle-versions-plugin#tasks
+def isUnstable = { version ->
+    def unstableKeywords = ['alpha', 'beta', 'rc']
+    return unstableKeywords.any { version.toLowerCase().contains(it) }
+}
+
+// check for non-alpha dependency updates
+tasks.named('dependencyUpdates').configure {
+    rejectVersionIf { isUnstable(it.candidate.version) }
 }

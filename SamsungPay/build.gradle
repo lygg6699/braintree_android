@@ -18,9 +18,6 @@ android {
         buildConfigField "String", "VERSION_NAME", "\"${rootProject.versionName}\""
     }
 
-    lintOptions {
-        abortOnError false
-    }
 
     testOptions.unitTests {
         all {
@@ -34,6 +31,10 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
+    lint {
+        abortOnError false
+    }
+    namespace 'com.braintreepayments.api.samsungpay'
 }
 
 dependencies {

@@ -17,10 +17,6 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
-    lintOptions {
-        textReport true
-        textOutput 'stdout'
-    }
 
     testOptions {
         unitTests {
@@ -34,6 +30,18 @@ android {
     compileOptions {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
+    }
+    lint {
+        textOutput file('stdout')
+        textReport true
+    }
+    namespace 'com.braintreepayments.api.paypaldatacollector'
+
+    // Ref: https://stackoverflow.com/a/70420754
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
     }
 }
 
