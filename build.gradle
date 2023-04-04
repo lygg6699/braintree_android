@@ -107,6 +107,9 @@ ext["signing.secretKeyRingFile"] = System.getenv('SIGNING_KEY_FILE') ?: ''
 
 allprojects {
     repositories {
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+        }
         mavenCentral()
         google()
     }
