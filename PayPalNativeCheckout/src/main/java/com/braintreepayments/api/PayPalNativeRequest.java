@@ -51,6 +51,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
     private String riskCorrelationId;
     private final ArrayList<PayPalNativeCheckoutLineItem> lineItems;
     private String returnUrl;
+    private boolean shouldWebFallback = false;
 
     /**
      * Constructs a request for PayPal Checkout and Vault flows.
@@ -205,6 +206,19 @@ public abstract class PayPalNativeRequest implements Parcelable {
 
     public String getReturnUrl() {
         return returnUrl;
+    }
+
+    /**
+     * Optional: This will allow the experience to be a fully web experience
+     *
+     * @param shouldWebFallback if the native client should show the web fallback
+     */
+    public void setShouldWebFallback(boolean shouldWebFallback) {
+        this.shouldWebFallback = shouldWebFallback;
+    }
+
+    public boolean shouldWebFallback() {
+        return shouldWebFallback;
     }
 
     @Nullable

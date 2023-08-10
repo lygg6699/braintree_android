@@ -167,9 +167,9 @@ public class PayPalNativeCheckoutClient {
                         null,
                         null,
                         null,
-                        new SettingsConfig(),
+                        new SettingsConfig(false, payPalRequest.shouldWebFallback()),
                         new UIConfig(
-                                false
+                            false
                         ),
                         payPalRequest.getReturnUrl()
                     )
