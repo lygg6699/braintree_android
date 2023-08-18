@@ -34,6 +34,7 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
+    namespace 'com.braintreepayments.api.samsungpay'
 }
 
 dependencies {

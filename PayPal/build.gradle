@@ -29,6 +29,7 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
+    namespace 'com.braintreepayments.api.paypal'
 }
 
 dependencies {

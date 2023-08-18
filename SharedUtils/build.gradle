@@ -30,7 +30,12 @@ android {
     compileOptions {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
+        kotlinOptions {
+            jvmTarget = versions.javaSourceCompatibility
+        }
     }
+    namespace 'com.braintreepayments.api.sharedutils'
+    testNamespace 'com.braintreepayments.api.sharedutilstest'
 }
 
 dependencies {

@@ -29,6 +29,8 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
+    namespace 'com.braintreepayments.api.card'
+    testNamespace 'com.braintreepayments.api'
 }
 
 dependencies {

@@ -35,6 +35,8 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
+    namespace 'com.braintreepayments.api.data_collector'
+    testNamespace 'com.braintreepayments.api'
 }
 
 dependencies {
