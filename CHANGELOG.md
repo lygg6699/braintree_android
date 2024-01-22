@@ -101,7 +101,7 @@
     * Change `CardTokenizeCallback` parameters
   * SEPA Direct Debit
     * Remove `SEPADirectDebitLifecycleObserver` and `SEPADirectDebitListener`
-    * Add `SEPADirectDebitLauncher`, `SEPADirectDebitPendingRequest`, 
+    * Add `SEPADirectDebitLauncher`, `SEPADirectDebitLauncherCallback`, 
       `SEPADirectDebitPaymentAuthRequestCallback`, `SEPADirectDebitPaymentAuthRequest`, 
       `SEPADirectDebitResult`, `SEPADirectDebitPaymentAuthRequestParams` and 
       `SEPADirectDebitTokenizeCallback`

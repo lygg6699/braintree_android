@@ -467,35 +467,33 @@ do not need to be instantiated in `OnCreate`.
 ```diff
 class MyActivity : FragmentActivity() {
 
-+   private val sepaDirectDebitLauncher = SEPADirectDebitLauncher() 
++   private lateinit var sepaDirectDebitLauncher: SEPADirectDebitLAuncher
 -   private lateinit var braintreeClient: BraintreeClient
     private lateinit var sepaDirectDebitClient: SEPADirectDebitClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
++       sepaDirectDebitLauncher = SEPADirectDebitLauncher() { paymentAuthResult ->
++           sepaDirectDebitClient.tokenize(paymentAuthResult) { result -> 
++                when(result) {
++                   is SEPADirectDebitResult.Success -> { /* handle result.nonce */ }
++                   is SEPADirectDebitResult.Failure -> { /* handle result.error */ }
++                   is SEPADirectDebitResult.Cancel -> { /* handle user canceled */ }
++               }  
++           }
++       }
     }
 
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
     override fun onNewIntent(intent: Intent) {
-+       handleReturnToAppFromBrowser(intent)
++       sepaDirectDebitLauncher.handleReturnToAppFromBrowser(requireContext(), intent)
     }
 
     // ALL OTHER ACTIVITY LAUNCH MODES 
     override fun onResume() {
-+       handleReturnToAppFromBrowser(requireActivity().intent)
-    }
-    
-    fun handleReturnToAppFromBrowser(intent: Intent) {
-       // fetch stored SEPADirectDebitPendingRequest.Success 
-+       fetchPendingRequest()?.let {
-+          sepaDirectDebitLauncher.handleReturnToAppFromBrowser(it, intent)?.let { paymentAuthResult ->
-+             completeSEPAFlow(paymentAuthResult)
-+             // clear stored SEPADirectDebitPendingRequest.Success
-+          } ?: run {
-+             // user returned to app without completing SEPA flow, handle accordingly
-+          }
-+       }   
++       sepaDirectDebitLauncher.handleReturnToAppFromBrowser(requireContext(), requireActivity().
++           intent)
     }
 
     fun initializeClients() {
@@ -515,23 +513,9 @@ class MyActivity : FragmentActivity() {
 +                   // web-flow mandate not required, handle paymentAuthRequest.nonce
 +               is (SEPADirectDebitPaymentAuthRequest.ReadyToLaunch) -> {
 +                    // web-flow mandate required
-+                   val pendingRequest = sepaDirectDebitLauncher.launch(this@MyActivity, paymentAuthRequet)
-+                   when(pendingRequest) {
-+                       is (SEPADirectDebitPendingRequest.Success) { /* store pending request */ }
-+                       is (SEPADirectDebitPendingRequest.Failure) { /* handle error */ }
-+                   }              
++                   sepaDirectDebitLauncher.launch(activity, paymentAuthRequest)
 +               }
 +           }
-+       }
-    }
-    
-    fun completeSEPAFlow(paymentAuthResult: SEPADirectDebitPaymentAuthResult) {
-+       sepaDirectDebitClient.tokenize(paymentAuthResult) { result -> 
-+            when(result) {
-+               is SEPADirectDebitResult.Success -> { /* handle result.nonce */ }
-+               is SEPADirectDebitResult.Failure -> { /* handle result.error */ }
-+               is SEPADirectDebitResult.Cancel -> { /* handle user canceled */ }
-+            }  
 +       }
     }
 
