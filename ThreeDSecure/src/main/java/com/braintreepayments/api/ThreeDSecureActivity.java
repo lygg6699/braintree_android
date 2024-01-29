@@ -43,6 +43,12 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
         new Handler(Looper.getMainLooper()).post(() -> launchCardinalAuthChallenge(cardinalClient));
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cardinalClient.cleanup();
+    }
+
     @VisibleForTesting
     void launchCardinalAuthChallenge(CardinalClient cardinalClient) {
         if (isFinishing()) {
@@ -78,6 +84,7 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
         Intent result = new Intent();
         result.putExtra(EXTRA_ERROR_MESSAGE, errorMessage);
         setResult(RESULT_COULD_NOT_START_CARDINAL, result);
+        cardinalClient.cleanup();
         finish();
     }
 
@@ -95,6 +102,7 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
         result.putExtra(EXTRA_VALIDATION_RESPONSE, validateResponse);
 
         setResult(RESULT_OK, result);
+        cardinalClient.cleanup();
         finish();
     }
 }
