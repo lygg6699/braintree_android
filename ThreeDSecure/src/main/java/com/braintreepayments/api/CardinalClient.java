@@ -34,6 +34,7 @@ class CardinalClient {
 
             @Override
             public void onValidated(ValidateResponse validateResponse, String serverJWT) {
+                cleanup();
                 if (consumerSessionId == null) {
                     callback.onResult(null, new BraintreeException("consumer session id not available"));
                 } else {

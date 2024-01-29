@@ -613,7 +613,6 @@ public class ThreeDSecureClient {
                     break;
             }
         }
-        cardinalClient.cleanup();
     }
 
     private void sendLiabilityShiftedAnalytics(ThreeDSecureResult threeDSecureResult) {

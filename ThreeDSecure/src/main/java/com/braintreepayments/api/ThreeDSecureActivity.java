@@ -43,12 +43,6 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
         new Handler(Looper.getMainLooper()).post(() -> launchCardinalAuthChallenge(cardinalClient));
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        cardinalClient.cleanup();
-    }
-
     @VisibleForTesting
     void launchCardinalAuthChallenge(CardinalClient cardinalClient) {
         if (isFinishing()) {
