@@ -197,10 +197,10 @@ public class ThreeDSecureInfo implements Parcelable {
 
     /**
      * @return The Payer Authentication Response (PARes) Status, a transaction status result identifier. Possible Values:
-     * Y – Successful Authentication
-     * N – Failed Authentication
-     * U – Unable to Complete Authentication
-     * A – Successful Stand-In Attempts Transaction
+     * Y: Successful Authentication
+     * N: Failed Authentication
+     * U: Unable to Complete Authentication
+     * A: Successful Stand-In Attempts Transaction
      */
     @Nullable
     public String getParesStatus() {

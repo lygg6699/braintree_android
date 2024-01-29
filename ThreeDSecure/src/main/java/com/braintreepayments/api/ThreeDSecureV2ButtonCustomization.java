@@ -25,7 +25,7 @@ public class ThreeDSecureV2ButtonCustomization implements Parcelable {
     }
 
     /**
-     * @param textColor Color code in Hex format. For example, the color code can be “#999999”.
+     * @param textColor Color code in Hex format. For example, the color code can be #999999.
      */
     public void setTextColor(@Nullable String textColor) {
         cardinalButtonCustomization.setTextColor(textColor);
@@ -63,7 +63,7 @@ public class ThreeDSecureV2ButtonCustomization implements Parcelable {
 
     /**
      * @param backgroundColor Color code in Hex format. For example, the color code can be
-     *                        “#999999”.
+     *                        #999999.
      */
     public void setBackgroundColor(@Nullable String backgroundColor) {
         cardinalButtonCustomization.setBackgroundColor(backgroundColor);
