@@ -8,8 +8,10 @@ import org.json.JSONException
 import org.json.JSONObject
 
 /**
- * Used to tokenize PayPal accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4)
+ * Used to tokenize PayPal accounts. For more information see the
+ * [documentation](https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4)
  */
+@Suppress("TooManyFunctions")
 class PayPalClient @VisibleForTesting internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient
@@ -166,6 +168,7 @@ class PayPalClient @VisibleForTesting internal constructor(
      * from  [PayPalLauncher.handleReturnToAppFromBrowser]
      * @param callback          [PayPalTokenizeCallback]
      */
+    @Suppress("SwallowedException")
     fun tokenize(
         paymentAuthResult: PayPalPaymentAuthResult.Success,
         callback: PayPalTokenizeCallback
