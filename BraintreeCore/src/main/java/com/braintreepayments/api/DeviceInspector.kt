@@ -29,7 +29,7 @@ class DeviceInspector @VisibleForTesting internal constructor(
         context: Context?,
         sessionId: String?,
         integration: String?,
-        payPalContextID: String?,
+        payPalContextId: String?,
     ): DeviceMetadata {
         return DeviceMetadata(
             platform = "Android",
@@ -49,7 +49,7 @@ class DeviceInspector @VisibleForTesting internal constructor(
             dropInVersion = dropInVersion,
             isPayPalInstalled = isPayPalInstalled(context),
             isVenmoInstalled = isVenmoInstalled(context),
-            payPalContextID = payPalContextID
+            payPalContextID = payPalContextId
         )
     }
 

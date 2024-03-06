@@ -214,11 +214,11 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun sendAnalyticsEvent(eventName: String) {
+    fun sendAnalyticsEvent(eventName: String, payPalContextId: String? = null) {
         getAuthorization { authorization, _ ->
             if (authorization != null) {
                 getConfiguration { configuration, _ ->
-                    sendAnalyticsEvent(eventName, configuration, authorization)
+                    sendAnalyticsEvent(eventName, configuration, authorization, payPalContextId)
                 }
             }
         }
@@ -227,15 +227,18 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     private fun sendAnalyticsEvent(
         eventName: String,
         configuration: Configuration?,
-        authorization: Authorization
+        authorization: Authorization,
+        payPalContextId: String?
     ) {
         if (isAnalyticsEnabled(configuration)) {
+            // TODO: Create `AnalyticsEvent` data class to hold analytics event data
             analyticsClient.sendEvent(
                 configuration!!,
                 eventName,
                 sessionId,
                 integrationType,
-                authorization
+                authorization,
+                payPalContextId
             )
         }
     }
