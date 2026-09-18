@@ -1,8 +1,8 @@
 [versions]
 gradle = "8.6.1"
-kotlinGradlePlugin = "1.8.0"
+kotlinGradlePlugin = "2.4.20"
 gradleNexusPublish = "1.1.0"
-kotlin = "1.9.10"
+kotlin = "2.4.20"
 ksp = "1.9.10-1.0.13"
 coreKtx = "1.12.0"
 androidxLifecycle = "2.6.2"
@@ -26,7 +26,7 @@ jsonAssert = "1.5.1"
 mockk = "1.13.8"
 detekt = "1.23.6"
 dokka = "1.9.10"
-okhttp = "4.12.0"
+okhttp = "5.5.0"
 
 # Demo App
 androidxFragment = "1.8.8"
